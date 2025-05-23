@@ -6,11 +6,13 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { authApi } from '../../services/api';
 
-export default function FarmerSignin() {
+export default function FarmerAdminSignup() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    mobile_number: '',
-    registration_number: ''
+    email: '',
+    card_id_no: '',
+    password: '',
+    password_confirmation: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,20 +27,33 @@ export default function FarmerSignin() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
+    if (formData.password !== formData.password_confirmation) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const response = await authApi.login(formData);
+      const signupData = {
+        email: formData.email,
+        card_id_no: formData.card_id_no,
+        password: formData.password,
+        password_confirmation: formData.password_confirmation
+      };
+
+      const response = await authApi.farmerAdminSignup(signupData);
 
       // Save token to localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
       // Redirect to dashboard
-      router.push('/farmer/dashboard');
+      router.push('/farmer-admin/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      setError(err.response?.data?.message || 'An error occurred during signup');
     } finally {
       setLoading(false);
     }
@@ -51,7 +66,7 @@ export default function FarmerSignin() {
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-green-700 text-white p-6">
-            <h2 className="text-2xl font-bold text-center">Sign In as Farmer</h2>
+            <h2 className="text-2xl font-bold text-center">Signup as System Admin</h2>
           </div>
 
           {error && (
@@ -63,12 +78,12 @@ export default function FarmerSignin() {
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Mobile Number
+                Email
               </label>
               <input
-                type="tel"
-                name="mobile_number"
-                value={formData.mobile_number}
+                type="email"
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
@@ -77,12 +92,40 @@ export default function FarmerSignin() {
 
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Registration Number
+                Card ID
               </label>
               <input
                 type="text"
-                name="registration_number"
-                value={formData.registration_number}
+                name="card_id_no"
+                value={formData.card_id_no}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="password_confirmation"
+                value={formData.password_confirmation}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
@@ -94,13 +137,13 @@ export default function FarmerSignin() {
               disabled={loading}
               className={`w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
           </form>
 
           <div className="px-6 py-4 bg-gray-50 border-t">
             <p className="text-sm text-gray-600 text-center">
-              Don't have an account? <a href="/farmer/signup" className="text-green-600 font-medium hover:text-green-800">Sign Up</a>
+              Already have an account? <a href="/farmer-admin/signin" className="text-green-600 font-medium hover:text-green-800">Login</a>
             </p>
           </div>
           <div className="px-6 py-4 bg-gray-50 border-t">

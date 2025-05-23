@@ -5,7 +5,9 @@ import { User, UserPlus, Users, Package, BookOpen, DollarSign, Phone, HelpCircle
 
 export default function TobaccoManagementSystem() {
   const [showFarmerOptions, setShowFarmerOptions] = useState(false);
-  
+  const [showAdminOptions, setShowAdminOptions] = useState(false);
+  const [showDistributorOptions, setShowDistributorOptions] = useState(false);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header */}
@@ -52,17 +54,21 @@ export default function TobaccoManagementSystem() {
                 
                 {showFarmerOptions && (
                   <div className="mt-4 space-y-2">
-                    <a href="#" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
+                    <a href="/farmer/signup" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
                       <UserPlus size={18} />
                       <span>Signup as Farmer</span>
                     </a>
-                    <a href="#" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
+                    <a href="/farmer-admin/signup" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
                       <User size={18} />
                       <span>Signup as Farmer-Admin</span>
                     </a>
-                    <a href="#" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
+                    <a href="/farmer/signin" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
                       <LayoutDashboard size={18} />
-                      <span>Login</span>
+                      <span>Login as Farmer</span>
+                    </a>
+                    <a href="/farmer-admin/signin" className="block bg-green-100 text-green-800 p-3 rounded flex items-center space-x-2 hover:bg-green-200">
+                      <User size={18} />
+                      <span>Login as Farmer-Admin</span>
                     </a>
                   </div>
                 )}
@@ -77,9 +83,24 @@ export default function TobaccoManagementSystem() {
               </div>
               <div className="p-6">
                 <p className="text-gray-600 mb-6">Manage farmers, track production, and oversee the entire tobacco farming system.</p>
-                <button className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+                <button 
+                  onClick={() => setShowAdminOptions(!showAdminOptions)} 
+                  className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"
+                >
                   Enter Portal
                 </button>
+                {showAdminOptions && (
+                  <div className="mt-4 space-y-2">
+                    <a href="/farmer-admin/signup" className="block bg-blue-100 text-blue-800 p-3 rounded flex items-center space-x-2 hover:bg-blue-200">
+                      <UserPlus size={18} />
+                      <span>Signup as System Admin</span>
+                    </a>
+                    <a href="/farmer-admin/signin" className="block bg-blue-100 text-blue-800 p-3 rounded flex items-center space-x-2 hover:bg-blue-200">
+                      <User size={18} />
+                      <span>Login</span>
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -91,9 +112,24 @@ export default function TobaccoManagementSystem() {
               </div>
               <div className="p-6">
                 <p className="text-gray-600 mb-6">Manage distribution, track inventory and coordinate with farmers and admin.</p>
-                <button className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition">
+                <button 
+                  onClick={() => setShowDistributorOptions(!showDistributorOptions)} 
+                  className="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition"
+                >
                   Enter Portal
                 </button>
+                {showDistributorOptions && (
+                  <div className="mt-4 space-y-2">
+                    <a href="/distributor/signup" className="block bg-purple-100 text-purple-800 p-3 rounded flex items-center space-x-2 hover:bg-purple-200">
+                      <UserPlus size={18} />
+                      <span>Signup as Distributor</span>
+                    </a>
+                    <a href="/distributor/signin" className="block bg-purple-100 text-purple-800 p-3 rounded flex items-center space-x-2 hover:bg-purple-200">
+                      <User size={18} />
+                      <span>Login</span>
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

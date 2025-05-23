@@ -1,6 +1,5 @@
-// components/layout/Header.tsx
+import React from 'react';
 import Link from 'next/link';
-import { Phone, HelpCircle, LayoutDashboard } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -9,6 +8,22 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold">
           Tobacco Farmer MS
         </Link>
-        <div className="flex items-center space-x-6">
-          <Link href="#" className="flex items-center space-x-1 hover:text-green-200">
-            <Phone size={18} />
+        <nav>
+          <ul className="flex space-x-4">
+      
+            <li>
+              <Link href="/farmer/signup" className="hover:underline">
+                Farmer Signup
+              </Link>
+            </li>
+            <li>
+              <Link href="/buyer/signup" className="hover:underline">
+                Farmer-Admin Signup
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+  );
+}
