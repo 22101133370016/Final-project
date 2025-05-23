@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { authApi } from '../../services/api';
@@ -24,7 +25,7 @@ export default function DistributorSignin() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -38,8 +39,13 @@ export default function DistributorSignin() {
 
       // Redirect to dashboard
       router.push('/distributor/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+    } catch (err: unknown) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } };
+        setError(axiosError.response?.data?.message || 'An error occurred during login');
+      } else {
+        setError('An error occurred during login');
+      }
     } finally {
       setLoading(false);
     }
@@ -63,9 +69,7 @@ export default function DistributorSignin() {
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">
-                Email
-              </label>
+              <label className="text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 name="email"
@@ -77,9 +81,7 @@ export default function DistributorSignin() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">
-                Card ID
-              </label>
+              <label className="text-sm font-medium text-gray-700">Card ID</label>
               <input
                 type="text"
                 name="card_id_no"
@@ -91,9 +93,7 @@ export default function DistributorSignin() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">
-                Password
-              </label>
+              <label className="text-sm font-medium text-gray-700">Password</label>
               <input
                 type="password"
                 name="password"
@@ -115,12 +115,13 @@ export default function DistributorSignin() {
 
           <div className="px-6 py-4 bg-gray-50 border-t">
             <p className="text-sm text-gray-600 text-center">
-              Don't have an account? <a href="/distributor/signup" className="text-purple-600 font-medium hover:text-purple-800">Sign Up</a>
+              Don&apos;t have an account?{' '}
+              <Link href="/distributor/signup" className="text-purple-600 font-medium hover:text-purple-800">Sign Up</Link>
             </p>
           </div>
           <div className="px-6 py-4 bg-gray-50 border-t">
             <p className="text-sm text-gray-600 text-center">
-              <a href="/" className="text-purple-600 font-medium hover:text-purple-800">Back to Home</a>
+              <Link href="/" className="text-purple-600 font-medium hover:text-purple-800">Back to Home</Link>
             </p>
           </div>
         </div>

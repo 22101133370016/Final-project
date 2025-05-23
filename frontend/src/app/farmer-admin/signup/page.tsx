@@ -50,8 +50,8 @@ export default function FarmerAdminSignup() {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Redirect to dashboard
-      router.push('/farmer-admin/dashboard');
+      // Redirect to signin page after signup
+      router.push('/farmer-admin/signin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred during signup');
     } finally {

@@ -1,5 +1,7 @@
+import type { UserData } from '../types/api';
+
 // Store user data in localStorage
-export const setUserData = (userData, token) => {
+export const setUserData = (userData: UserData, token: string) => {
   localStorage.setItem('user', JSON.stringify(userData));
   localStorage.setItem('token', token);
 };

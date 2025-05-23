@@ -50,8 +50,8 @@ export default function DistributorSignup() {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Redirect to dashboard
-      router.push('/distributor/dashboard');
+      // Redirect to signin page after signup
+      router.push('/distributor/signin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred during signup');
     } finally {
