@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
+/**
+ * @noinspection PhpUndefinedClassInspection
+ * @noinspection PhpUndefinedNamespaceInspection
+ */
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,27 +17,35 @@ class AuthController extends Controller
 {
     public function registerFarmer(Request $request)
     {
-        $request->validate([
-            'full_name' => 'required|string|max:255',
-            'mobile_number' => 'required|string|unique:users,mobile_number',
-            'registration_number' => 'required|string|unique:users,registration_number',
-            'location' => 'required|string',
-        ]);
+        try {
+            $request->validate([
+                'full_name' => 'required|string|max:255',
+                'mobile_number' => 'required|string|unique:users,mobile_number',
+                'registration_number' => 'required|string|unique:users,registration_number',
+                'location' => 'required|string',
+            ]);
 
-        $user = User::create([
-            'user_type' => 'farmer',
-            'full_name' => $request->full_name,
-            'mobile_number' => $request->mobile_number,
-            'registration_number' => $request->registration_number,
-            'location' => $request->location,
-        ]);
+            $user = User::create([
+                'user_type' => 'farmer',
+                'full_name' => $request->full_name,
+                'mobile_number' => $request->mobile_number,
+                'registration_number' => $request->registration_number,
+                'location' => $request->location,
+                'password' => Hash::make('defaultpassword123'), // default password
+            ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            return response()->json([
+                'user' => $user,
+                'token' => $token
+            ], 201);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error in registerFarmer: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Stack trace: ' . $e->getTraceAsString());
+            // Return actual error message for debugging
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function registerFarmerAdmin(Request $request)
@@ -60,25 +73,31 @@ class AuthController extends Controller
 
     public function registerAdmin(Request $request)
     {
-        $request->validate([
-            'email' => 'required|string|email|max:255|unique:users',
-            'card_id_no' => 'required|string|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            $request->validate([
+                'email' => 'required|string|email|max:255|unique:users',
+                'card_id_no' => 'required|string|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+            ]);
 
-        $user = User::create([
-            'user_type' => 'admin',
-            'email' => $request->email,
-            'card_id_no' => $request->card_id_no,
-            'password' => Hash::make($request->password),
-        ]);
+            $user = User::create([
+                'user_type' => 'admin',
+                'email' => $request->email,
+                'card_id_no' => $request->card_id_no,
+                'password' => Hash::make($request->password),
+            ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            return response()->json([
+                'user' => $user,
+                'token' => $token
+            ], 201);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error in registerAdmin: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function registerDistributor(Request $request)
@@ -106,57 +125,72 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // For farmer login
-        if ($request->has('mobile_number') && $request->has('registration_number')) {
-            $user = User::where('mobile_number', $request->mobile_number)
-                        ->where('registration_number', $request->registration_number)
-                        ->first();
-                        
-            if (!$user || $user->user_type !== 'farmer') {
-                throw ValidationException::withMessages([
-                    'mobile_number' => ['The provided credentials are incorrect.'],
-                ]);
+        // For admin and farmer login
+        if (($request->has('card_id_no') || $request->has('email')) && $request->has('password')) {
+            $userQuery = User::query();
+
+            if ($request->has('card_id_no')) {
+                $userQuery->where('card_id_no', $request->card_id_no);
+            } elseif ($request->has('email')) {
+                $userQuery->where('email', $request->email);
             }
-        } 
-        // For admin, farmer-admin, distributor login
-        else if ($request->has('card_id_no') && $request->has('password')) {
-            $user = User::where('card_id_no', $request->card_id_no)->first();
-            
+
+            $user = $userQuery->first();
+
             if (!$user || !Hash::check($request->password, $user->password)) {
                 throw ValidationException::withMessages([
-                    'card_id_no' => ['The provided credentials are incorrect.'],
+                    'login' => ['The provided credentials are incorrect.'],
                 ]);
             }
-        } 
-        // For email-based login
-        else if ($request->has('email') && $request->has('password')) {
-            $user = User::where('email', $request->email)->first();
-            
-            if (!$user || !Hash::check($request->password, $user->password)) {
+
+            if ($user->user_type !== 'admin' && $user->user_type !== 'farmer_admin') {
                 throw ValidationException::withMessages([
-                    'email' => ['The provided credentials are incorrect.'],
+                    'login' => ['Invalid user type for this portal.'],
                 ]);
             }
+
+            // Create token for authenticated user
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+            ]);
         }
-        else {
-            throw ValidationException::withMessages([
-                'error' => ['Invalid login credentials provided.'],
+            $user = User::where('registration_number', $request->registration_number)
+                ->where('mobile_number', $request->mobile_number)
+                ->first();
+
+            if (!$user) {
+                throw ValidationException::withMessages([
+                    'registration_number' => ['The provided credentials are incorrect.'],
+                ]);
+            }
+
+            if ($user->user_type !== 'farmer') {
+                throw ValidationException::withMessages([
+                    'registration_number' => ['Invalid user type for this portal.'],
+                ]);
+            }
+
+            // Create token for authenticated user
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
             ]);
         }
 
-        // Create token for authenticated user
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
+        throw ValidationException::withMessages([
+            'error' => ['Invalid login credentials provided.'],
         ]);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        
+
         return response()->json([
             'message' => 'Successfully logged out'
         ]);

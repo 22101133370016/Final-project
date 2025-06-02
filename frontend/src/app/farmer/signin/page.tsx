@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
@@ -9,8 +9,8 @@ import { authApi } from '../../services/api';
 export default function FarmerSignin() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    mobile_number: '',
-    registration_number: ''
+    registration_number: '',
+    mobile_number: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,11 @@ export default function FarmerSignin() {
     setError('');
 
     try {
-      const response = await authApi.login(formData);
+      // Adjust login call to send registration_number and mobile_number
+      const response = await authApi.login({
+        registration_number: formData.registration_number,
+        mobile_number: formData.mobile_number
+      });
 
       // Save token to localStorage
       localStorage.setItem('token', response.data.token);
@@ -63,12 +67,12 @@ export default function FarmerSignin() {
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Mobile Number
+                Registration Number
               </label>
               <input
-                type="tel"
-                name="mobile_number"
-                value={formData.mobile_number}
+                type="text"
+                name="registration_number"
+                value={formData.registration_number}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
@@ -77,12 +81,12 @@ export default function FarmerSignin() {
 
             <div className="space-y-1">
               <label className="text-sm font-medium text-gray-700">
-                Registration Number
+                Mobile Number
               </label>
               <input
-                type="text"
-                name="registration_number"
-                value={formData.registration_number}
+                type="tel"
+                name="mobile_number"
+                value={formData.mobile_number}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 required

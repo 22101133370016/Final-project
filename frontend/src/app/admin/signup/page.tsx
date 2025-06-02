@@ -6,7 +6,7 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { authApi } from '../../services/api';
 
-export default function FarmerAdminSignup() {
+export default function AdminSignup() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
@@ -44,14 +44,14 @@ export default function FarmerAdminSignup() {
         password_confirmation: formData.password_confirmation
       };
 
-      const response = await authApi.farmerAdminSignup(signupData);
+      const response = await authApi.adminSignup(signupData);
 
       // Save token to localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Redirect to signin page after signup
-      router.push('/farmer-admin/signin');
+      // Redirect to system admin signin page after signup
+      router.push('/admin/signin');
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred during signup');
     } finally {
@@ -65,8 +65,8 @@ export default function FarmerAdminSignup() {
 
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-green-700 text-white p-6">
-            <h2 className="text-2xl font-bold text-center">Signup as Farmer Admin</h2>
+          <div className="bg-blue-700 text-white p-6">
+            <h2 className="text-2xl font-bold text-center">Signup as System Admin</h2>
           </div>
 
           {error && (
@@ -85,7 +85,7 @@ export default function FarmerAdminSignup() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -99,7 +99,7 @@ export default function FarmerAdminSignup() {
                 name="card_id_no"
                 value={formData.card_id_no}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -113,7 +113,7 @@ export default function FarmerAdminSignup() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -127,7 +127,7 @@ export default function FarmerAdminSignup() {
                 name="password_confirmation"
                 value={formData.password_confirmation}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -135,7 +135,7 @@ export default function FarmerAdminSignup() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
               {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
@@ -143,12 +143,12 @@ export default function FarmerAdminSignup() {
 
           <div className="px-6 py-4 bg-gray-50 border-t">
             <p className="text-sm text-gray-600 text-center">
-              Already have an account? <a href="/farmer-admin/signin" className="text-green-600 font-medium hover:text-green-800">Login</a>
+              Already have an account? <a href="/admin/signin" className="text-blue-600 font-medium hover:text-blue-800">Login</a>
             </p>
           </div>
           <div className="px-6 py-4 bg-gray-50 border-t">
             <p className="text-sm text-gray-600 text-center">
-              <a href="/" className="text-green-600 font-medium hover:text-green-800">Back to Home</a>
+              <a href="/" className="text-blue-600 font-medium hover:text-blue-800">Back to Home</a>
             </p>
           </div>
         </div>

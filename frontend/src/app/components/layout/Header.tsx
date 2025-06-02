@@ -10,15 +10,24 @@ export default function Header() {
         </Link>
         <nav>
           <ul className="flex space-x-4">
-      
             <li>
               <Link href="/farmer/signup" className="hover:underline">
                 Farmer Signup
               </Link>
             </li>
             <li>
-              <Link href="/buyer/signup" className="hover:underline">
+              <Link href="/farmer-admin/signup" className="hover:underline">
                 Farmer-Admin Signup
+              </Link>
+            </li>
+            <li>
+              <Link href="/farmer-admin/dashboard" className="hover:underline">
+                Farmer Admin Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link href="/" className="hover:underline">
+                Home
               </Link>
             </li>
           </ul>

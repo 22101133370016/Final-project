@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { authApi } from '../../services/api';
+
 
 export default function FarmerAdminSignin() {
   const router = useRouter();
@@ -36,8 +38,12 @@ export default function FarmerAdminSignin() {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Redirect to dashboard
-      router.push('/farmer-admin/dashboard');
+      // Redirect to farmer admin dashboard
+      if (response.data.user && response.data.user.user_type === 'farmer_admin') {
+        router.push('/farmer-admin/dashboard');
+      } else {
+        setError('Invalid user type for this portal');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred during login');
     } finally {
@@ -46,13 +52,13 @@ export default function FarmerAdminSignin() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-green-50 flex flex-col">
       <Header />
 
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden">
           <div className="bg-green-700 text-white p-6">
-            <h2 className="text-2xl font-bold text-center">Sign In as Admin</h2>
+            <h2 className="text-2xl font-bold text-center">Login as Farmer-Admin</h2>
           </div>
 
           {error && (
@@ -109,19 +115,19 @@ export default function FarmerAdminSignin() {
               disabled={loading}
               className={`w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {loading ? 'Signing In...' : 'Sign In'}
+              {loading ? 'Logging In...' : 'Login'}
             </button>
           </form>
 
-          <div className="px-6 py-4 bg-gray-50 border-t">
-            <p className="text-sm text-gray-600 text-center">
-              Don't have an account? <a href="/farmer-admin/signup" className="text-green-600 font-medium hover:text-green-800">Sign Up</a>
+          <div className="px-6 py-4 bg-green-50 border-t">
+            <p className="text-sm text-green-700 text-center">
+              Don't have an account? <a href="/farmer-admin/signup" className="font-medium underline hover:text-green-900">Sign Up</a>
             </p>
           </div>
-          <div className="px-6 py-4 bg-gray-50 border-t">
-            <p className="text-sm text-gray-600 text-center">
-              <a href="/" className="text-green-600 font-medium hover:text-green-800">Back to Home</a>
-            </p>
+          <div className="px-6 py-4 bg-green-50 border-t">
+              <p className="text-sm text-green-700 text-center">
+                <Link href="/" className="font-medium underline hover:text-green-900">Back to Home</Link>
+              </p>
           </div>
         </div>
       </main>
